@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClipCUT AI</title>
+  <style>
+    :root {
+      --bg-primary: #030712; /* Deepest Gray/Blue */
+      --bg-secondary: #111827; /* Gray 900 */
+      --bg-tertiary: #1f2937; /* Gray 800 */
+      --text-primary: #f9fafb; /* Gray 50 */
+      --text-secondary: #9ca3af; /* Gray 400 */
+      --accent-primary: #0ea5e9; /* Sky 500 (Blue/Cyan like image) */
+      --accent-hover: #0284c7; /* Sky 600 */
+      --accent-gradient: linear-gradient(135deg, #0ea5e9, #8b5cf6); /* Blue to Violet */
+      --border-color: #374151; /* Gray 700 */
+      --input-bg: #030712;
+      --danger: #ef4444;
+      --success: #10b981;
+      --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-primary);
+      background-image: radial-gradient(circle at top center, #1e1b4b 0%, var(--bg-primary) 50%);
+      color: var(--text-primary);
+      margin: 0;
+      padding: 0;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    header {
+      background: rgba(17, 24, 39, 0.8);
+      border-bottom: 1px solid var(--border-color);
+      padding: 1.5rem 1rem;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      font-size: 1.75rem;
+      font-weight: 800;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+      text-shadow: 0 0 30px rgba(124, 58, 237, 0.3);
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    .card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--card-shadow);
+    }
+
+    h2 { margin-top: 0; font-size: 1.25rem; margin-bottom: 1.5rem; }
+
+    .form-group { margin-bottom: 1.5rem; }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 1rem;
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      color: var(--text-primary);
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15);
+    }
+
+    .file-drop-area {
+      border: 2px dashed var(--border-color);
+      border-radius: 16px;
+      padding: 3rem 2rem;
+      text-align: center;
+      background: rgba(31, 41, 55, 0.5);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .file-drop-area:hover { 
+      border-color: var(--accent-primary);
+      background: rgba(124, 58, 237, 0.05);
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+    
+    .col {
+      flex: 1;
+      min-width: 200px; 
+    }
+
+    .toggle-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: var(--bg-tertiary);
+      padding: 1rem 1.25rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s;
+    }
+    .toggle-wrapper:hover {
+      border-color: var(--text-secondary);
+    }
+    .toggle-wrapper input { 
+      margin: 0; 
+      width: 1.25rem; 
+      height: 1.25rem; 
+      accent-color: var(--accent-primary); 
+    }
+    .toggle-wrapper label { 
+      margin: 0; 
+      cursor: pointer; 
+      color: var(--text-primary);
+      font-weight: 600;
+      text-transform: none;
+      letter-spacing: normal;
+      font-size: 1rem;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 1.25rem;
+      background: var(--accent-gradient);
+      color: #fff;
+      border: none;
+      border-radius: 16px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(124, 58, 237, 0.5);
+      filter: brightness(1.1);
+    }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      filter: grayscale(0.5);
+    }
+
+    .progress-container {
+      background: var(--bg-primary);
+      border-radius: 99px;
+      height: 8px;
+      overflow: hidden;
+      margin-top: 1rem;
+      border: 1px solid var(--border-color);
+    }
+    .progress-bar {
+      height: 100%;
+      background: var(--accent-gradient);
+      width: 0%;
+      transition: width 0.3s ease;
+      border-radius: 99px;
+      box-shadow: 0 0 10px rgba(124, 58, 237, 0.5);
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .clip-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      overflow: hidden;
+      transition: all 0.3s;
+      box-shadow: var(--card-shadow);
+    }
+    .clip-card:hover { 
+      transform: translateY(-8px); 
+      border-color: var(--accent-primary);
+      box-shadow: 0 20px 30px -10px rgba(124, 58, 237, 0.2);
+    }
+
+    video {
+      width: 100%;
+      display: block;
+      background: #000;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .clip-info { padding: 1.5rem; }
+    .clip-badge {
+      display: inline-block;
+      padding: 0.35rem 0.75rem;
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 99px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .clip-meta { font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 1.25rem; }
+    .clip-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+    .btn-sm {
+      padding: 0.6rem 1rem;
+      font-size: 0.85rem;
+      border-radius: 10px;
+      text-decoration: none;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      transition: all 0.2s;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-sm:hover { 
+      border-color: var(--accent-primary); 
+      color: #fff;
+      background: var(--accent-primary);
+    }
+
+    /* Divider with text */
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 2rem 0;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .divider:not(:empty)::before { margin-right: 1.5em; }
+    .divider:not(:empty)::after { margin-left: 1.5em; }
+    
+    /* Tab System */
+    .tab-header {
+      display: flex;
+      background: var(--bg-tertiary);
+      border-radius: 12px;
+      padding: 0.25rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border-color);
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 0.75rem;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: var(--bg-secondary);
+      color: var(--accent-primary);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .tab-content { display: none; animation: fadeIn 0.3s ease; }
+    .tab-content.active { display: block; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Slider Grid */
+    .slider-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .slider-grid .form-group { margin-bottom: 0; }
+    
+    #subtitle-settings, #dub_settings {
+        background: rgba(31, 41, 55, 0.3);
+        padding: 1.5rem;
+        border-radius: 16px;
+        margin-top: 1rem;
+        border: 1px solid var(--border-color);
+    }
+
+    @media (max-width: 768px) {
+      .container { padding: 1rem; }
+      .card { padding: 1.5rem; }
+      .brand { font-size: 1.5rem; }
+      .row { flex-direction: column; gap: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <header style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem;">
+    <div class="brand">🔥 ClipCUT AI</div>
+    <button id="theme-toggle" onclick="toggleTheme()" class="btn-sm" style="width: auto; padding: 0.5rem 1rem; font-size: 1.2rem; background: transparent; border: 1px solid var(--border-color);">
+        🌙
+    </button>
+  </header>
+
+  <div class="container">
+      <!-- Main Navigation -->
+      <div class="main-tabs" style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+          <button id="nav-clip" onclick="switchMainTab('clip')" class="btn-primary" style="width: auto; padding: 1rem 2rem; background: var(--bg-tertiary); border: 1px solid var(--border-color); box-shadow: none;">
+            🎬 Clip Generator
+          </button>
+          <button id="nav-edit" onclick="switchMainTab('edit')" class="btn-primary" style="width: auto; padding: 1rem 2rem; background: var(--bg-tertiary); border: 1px solid var(--border-color); box-shadow: none;">
+            🎨 Filter & Effects
+          </button>
+          <button id="nav-vocal" onclick="switchMainTab('vocal')" class="btn-primary" style="width: auto; padding: 1rem 2rem; background: var(--bg-tertiary); border: 1px solid var(--border-color); box-shadow: none;">
+            🎤 Vocal Remover
+          </button>
+      </div>
+
+      <div class="row">
+        <!-- Vocal Remover Section -->
+        <div id="section-vocal" class="col" style="flex: 1.5; display: none;">
+            <div class="card">
+                <h3 style="margin-top:0; color: var(--accent-primary); display: flex; align-items: center; gap: 0.5rem;">
+                    🎤 AI Vocal Remover
+                </h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                    Upload a video to separate vocals and background music.
+                </p>
+                
+                <form id="vocalForm" onsubmit="event.preventDefault(); processVocal();">
+                    <div class="form-group">
+                        <label>Upload Video</label>
+                        <div class="file-drop-area">
+                            <input type="file" id="vocal_file" name="vocal_file" accept=".mp4,.mkv,.mov,.mp3,.wav" style="width: auto;" required />
+                        </div>
+                    </div>
+                    
+                    <button type="submit" id="btn-vocal" class="btn-primary">✂️ Separate Vocals</button>
+                </form>
+
+                <!-- Audio Mixer Section -->
+                <div class="divider">OR</div>
+                <h3 style="margin-top:0; color: var(--accent-primary); display: flex; align-items: center; gap: 0.5rem;">
+                    🎵 Audio Mixer
+                </h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                    Add background music to your video.
+                </p>
+
+                <form id="audioMixForm" onsubmit="event.preventDefault(); processAudioMix();">
+                     <div class="form-group">
+                        <label>Upload Video</label>
+                        <div class="file-drop-area">
+                            <input type="file" id="mix_video_file" name="mix_video_file" accept=".mp4,.mkv,.mov" style="width: auto;" required>
+                        </div>
+                     </div>
+                     
+                     <div class="form-group">
+                        <label>Background Music (MP3/WAV)</label>
+                        <div class="file-drop-area" style="padding: 1.5rem;">
+                             <input type="file" id="mix_bg_file" name="mix_bg_file" accept=".mp3,.wav" style="width: auto;" required>
+                        </div>
+                     </div>
+                     
+                     <div class="form-group">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem;">
+                            <label>Music Volume</label>
+                            <span id="val_mix_bg_volume" style="font-size:0.85rem; color:var(--accent-primary);">20%</span>
+                        </div>
+                        <input type="range" id="mix_bg_volume" min="0" max="100" value="20" style="width:100%; accent-color: var(--accent-primary);" oninput="getEl('val_mix_bg_volume').textContent = this.value + '%'">
+                     </div>
+                     
+                     <button type="submit" id="btn-mix" class="btn-primary">🎵 Mix & Download</button>
+                </form>
+
+                <!-- Results Area -->
+                <div id="vocal-results" style="margin-top: 2rem; display: none;">
+                    <div class="divider">Results</div>
+                    <div style="display: flex; gap: 1rem; flex-direction: column;">
+                        <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: 12px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <h4 style="margin:0;">🎤 Vocals</h4>
+                                <span style="font-size: 0.8rem; color: var(--text-secondary);">Isolated Voice Track</span>
+                            </div>
+                            <a id="link-vocals" href="#" download class="btn-sm" style="background: var(--accent-primary); color: white;">⬇️ Download</a>
+                        </div>
+                        
+                        <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: 12px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <h4 style="margin:0;">🎵 Background</h4>
+                                <span style="font-size: 0.8rem; color: var(--text-secondary);">Instrumental / Music</span>
+                            </div>
+                            <a id="link-background" href="#" download class="btn-sm" style="background: var(--accent-primary); color: white;">⬇️ Download</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Left Column: Settings (Clip Section) -->
+        <div id="section-clip" class="col" style="flex: 1.5; display: block;">
+          <form id="clipForm">
+            <!-- Source Selection -->
+            <div class="form-group">
+              <label>Source URL (YouTube)</label>
+              <input type="text" id="youtube_url" name="youtube_url" placeholder="Paste YouTube link here..." />
+            </div>
+
+            <div class="divider">OR</div>
+
+            <div class="form-group">
+              <label>Upload Video File</label>
+              <div class="file-drop-area">
+                <input type="file" id="video_file" name="video_file" accept=".mp4,.mkv,.mov" style="width: auto;" />
+              </div>
+            </div>
+
+            <!-- Settings Grid -->
+            <div class="row">
+              <div class="col">
+                <label>Quality</label>
+                <select id="quality" name="quality">
+                  <option>144p</option>
+                  <option>240p</option>
+                  <option>360p</option>
+                  <option>480p</option>
+                  <option selected>1080p</option>
+                  <option>1440p</option>
+                  <option>2160p</option>
+                  <option>4320p</option>
+                </select>
+              </div>
+              <div class="col">
+                <label>Clip Duration (Seconds)</label>
+                <select id="clip_duration" name="clip_duration">
+                  <option>15</option>
+                  <option>20</option>
+                  <option>30</option>
+                  <option>45</option>
+                  <option selected>60</option>
+                </select>
+              </div>
+              <div class="col">
+                <label>Clip Count</label>
+                <select id="num_clips" name="num_clips">
+                  <option>1</option>
+                  <option>2</option>
+                  <option selected>3</option>
+                  <option>5</option>
+                  <option>10</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row" style="margin-top: 1.5rem;">
+              <div class="col">
+                <label>Output Format</label>
+                <select id="platform" name="platform">
+                  <option value="shorts">Portrait (9:16) - Shorts/Reels/TikTok</option>
+                  <option value="landscape">Landscape (16:9) - YouTube</option>
+                  <option value="square">Square (1:1) - Instagram/Posts</option>
+                </select>
+              </div>
+              <div class="col" style="display: flex; align-items: flex-end;">
+                 <div class="toggle-wrapper" style="width: 100%;">
+                    <input type="checkbox" id="auto_edit" name="auto_edit" checked />
+                    <label for="auto_edit">✨ AI Auto-Edit</label>
+                 </div>
+              </div>
+            </div>
+
+            <div class="row" style="margin-top: 1.5rem;">
+               <div class="col">
+                   <label>Transition Effect</label>
+                   <select id="ui_clip_transition" name="ui_clip_transition" onchange="getEl('transition_type').value=this.value">
+                       <option value="none">None</option>
+                       <option value="fade">Fade In/Out</option>
+                   </select>
+               </div>
+               <div class="col">
+                   <label>Trim Video (Optional)</label>
+                   <div style="display: flex; gap: 0.5rem;">
+                       <input type="number" id="ui_trim_start" name="ui_trim_start" placeholder="Start (s)" min="0" style="width: 50%;">
+                       <input type="number" id="ui_trim_end" name="ui_trim_end" placeholder="End (s)" min="0" style="width: 50%;">
+                   </div>
+               </div>
+            </div>
+
+            <!-- Subtitles Section -->
+            <div class="form-group" style="margin-top: 2rem;">
+              <div class="toggle-wrapper">
+                <input type="checkbox" id="subtitles" name="subtitles" checked onchange="toggleSubtitles()" />
+                <label for="subtitles">📝 AI Subtitles</label>
+              </div>
+              
+              <div id="subtitle-settings">
+                <div class="row">
+                  <div class="col">
+                    <label>Font Style</label>
+                    <select id="subtitle_font" name="subtitle_font">
+                      <option value="Arial">Arial</option>
+                      <option value="Verdana">Verdana</option>
+                      <option value="Tahoma">Tahoma</option>
+                      <option value="Times New Roman">Times New Roman</option>
+                      <option value="Courier New">Courier New</option>
+                      <option value="Impact">Impact</option>
+                      <option value="Comic Sans MS">Comic Sans MS</option>
+                    </select>
+                  </div>
+                  <div class="col">
+                    <label>Words per Line</label>
+                    <input type="number" id="subtitle_words" name="subtitle_words" value="5" min="1" max="20">
+                  </div>
+                  <div class="col">
+                     <label>Animation</label>
+                     <select id="subtitle_animation" name="subtitle_animation">
+                       <option value="None">None</option>
+                       <option value="Fade">Fade</option>
+                       <option value="Pop">Pop</option>
+                     </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dubbing Section -->
+            <div class="form-group">
+              <div class="toggle-wrapper">
+                <input type="checkbox" id="dubbing_enabled" name="dubbing_enabled" onchange="toggleDubbing()" />
+                <label for="dubbing_enabled">🎙️ AI Dubbing</label>
+              </div>
+
+              <div id="dub_settings" style="display:none;">
+                <div class="row">
+                  <div class="col">
+                    <label>Target Language</label>
+                    <select id="target_language" name="target_language">
+                      <option value="hi">Hindi (हिंदी)</option>
+                      <option value="en">English (English)</option>
+                      <option value="es">Spanish (Español)</option>
+                      <option value="fr">French (Français)</option>
+                      <option value="de">German (Deutsch)</option>
+                      <option value="ja">Japanese (日本語)</option>
+                      <option value="zh-CN">Chinese (中文)</option>
+                      <option value="pt">Portuguese (Português)</option>
+                      <option value="ru">Russian (Русский)</option>
+                      <option value="it">Italian (Italiano)</option>
+                      <option value="ko">Korean (한국어)</option>
+                      <option value="tr">Turkish (Türkçe)</option>
+                      <option value="nl">Dutch (Nederlands)</option>
+                      <option value="pl">Polish (Polski)</option>
+                      <option value="id">Indonesian (Bahasa Indonesia)</option>
+                      <option value="ar">Arabic (العربية)</option>
+                      <option value="bn">Bengali (বাংলা)</option>
+                      <option value="ta">Tamil (தமிழ்)</option>
+                      <option value="te">Telugu (తెలుగు)</option>
+                      <option value="mr">Marathi (मराठी)</option>
+                      <option value="ur">Urdu (اردو)</option>
+                      <option value="vi">Vietnamese (Tiếng Việt)</option>
+                      <option value="th">Thai (ไทย)</option>
+                      <option value="uk">Ukrainian (Українська)</option>
+                      <option value="sv">Swedish (Svenska)</option>
+                    </select>
+                  </div>
+                  <div class="col">
+                    <label>Voice Gender</label>
+                    <select id="voice_gender" name="voice_gender">
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Hidden Filter Inputs -->
+            <input type="hidden" id="filter_brightness" name="filter_brightness" value="0">
+            <input type="hidden" id="filter_contrast" name="filter_contrast" value="1">
+            <input type="hidden" id="filter_saturation" name="filter_saturation" value="1">
+            <input type="hidden" id="filter_exposure" name="filter_exposure" value="0">
+            <input type="hidden" id="filter_highlights" name="filter_highlights" value="0">
+            <input type="hidden" id="filter_shadows" name="filter_shadows" value="0">
+            <input type="hidden" id="filter_vignette" name="filter_vignette" value="0">
+            <input type="hidden" id="filter_warmth" name="filter_warmth" value="0">
+            <input type="hidden" id="filter_tint" name="filter_tint" value="0">
+            <input type="hidden" id="filter_sharpness" name="filter_sharpness" value="0">
+            <input type="hidden" id="filter_grayscale" name="filter_grayscale" value="0">
+            <input type="hidden" id="filter_preset" name="filter_preset" value="none">
+            <input type="hidden" id="filter_effect" name="filter_effect" value="none">
+            <input type="hidden" id="trim_start" name="trim_start" value="0">
+            <input type="hidden" id="trim_end" name="trim_end" value="0">
+
+            <div style="margin-top: 2rem;">
+              <button id="generateBtn" type="submit" class="btn-primary">🚀 Generate Viral Clips</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Right Column: Filter Studio (Edit Section) -->
+        <div id="section-edit" class="col" style="flex: 1; min-width: 320px; display: none;">
+          <div class="card" style="position: sticky; top: 100px; padding: 1.5rem; border: 1px solid var(--accent-primary); box-shadow: 0 0 20px rgba(124, 58, 237, 0.1);">
+            <h3 style="margin-top:0; color: var(--accent-primary); display: flex; align-items: center; gap: 0.5rem;">
+              🎨 Live Filter Studio
+            </h3>
+            
+            <!-- Live Preview Player -->
+            <div style="aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 0.5rem; position: relative;">
+                <video id="previewPlayer" style="width:100%; height:100%; object-fit:contain;" loop playsinline></video>
+                <img id="previewImage" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; object-fit:contain; z-index:15; pointer-events:none;" />
+                <div id="vignette_overlay" style="position:absolute; inset:0; pointer-events:none; z-index:10; background: radial-gradient(circle, transparent 40%, black 140%); opacity: 0; transition: opacity 0.1s;"></div>
+                <div id="previewPlaceholder" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; color:rgba(255,255,255,0.3); pointer-events:none;">
+                    <span style="font-size:3rem; margin-bottom:1rem;">▶️</span>
+                    <span>Preview Area</span>
+                </div>
+            </div>
+            
+            <div style="display:flex; gap:0.5rem; margin-bottom: 1.5rem; justify-content:center;">
+                 <button type="button" class="btn-sm" onclick="togglePlay()">⏯️ Play/Pause</button>
+                 <button type="button" class="btn-sm" onclick="serverPreview()">🔄 Update Preview</button>
+                 <button type="button" class="btn-sm" onclick="clearServerPreview()">❌ Clear Preview</button>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="tab-header" style="position: relative;">
+                <button class="tab-btn active" onclick="switchTab('presets')">🎨 Presets</button>
+                <button class="tab-btn" onclick="switchTab('adjust')">🎚️ Adjust</button>
+                <button class="tab-btn" onclick="switchTab('effects')">⚡ Effects</button>
+                <button class="tab-btn" onclick="switchTab('tools')">✂️ Tools</button>
+                
+                <button onclick="resetFilters()" style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); background: transparent; border: none; cursor: pointer; color: var(--text-secondary); padding: 0.5rem;" title="Reset All Filters">
+                    🔄
+                </button>
+            </div>
+
+            <!-- TAB 1: PRESETS -->
+            <div id="tab-presets" class="tab-content active">
+                <!-- Top 10 Presets Section -->
+                <div style="margin-bottom:1.5rem;">
+                   <h4 style="margin:0 0 1rem 0; color:var(--text-primary); font-size:0.9rem; text-transform:uppercase; letter-spacing:1px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:0.5rem; display:flex; justify-content:space-between; align-items:center;">
+                       🔥 Top 10 Filters
+                       <span style="font-size:0.7rem; color:var(--text-secondary); text-transform:none;">Most Popular</span>
+                   </h4>
+                   <div style="display:flex; gap:0.75rem; overflow-x: auto; padding-bottom: 1rem; scrollbar-width: thin;">
+                      {% set top_filters = ['punch', 'golden', 'radiate', 'warm_contrast', 'calm', 'cool_light', 'vivid_cool', 'dramatic_cool', 'vintage_1', 'cine_1'] %}
+                      {% for key in top_filters %}
+                        {% if key in filter_library %}
+                        <div onclick="applyPreset('{{ key }}')" style="cursor:pointer; text-align:center; min-width: 80px;">
+                            <div style="width:80px; aspect-ratio:1; background:linear-gradient(135deg, #333, #111); border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:0.5rem; border:2px solid transparent; transition:all 0.2s; position:relative; overflow:hidden;" class="preset-card">
+                              <div class="preset-preview" style="position:absolute; inset:0; background:linear-gradient(45deg, var(--accent-primary), transparent); opacity:0.3;" data-filter-css="{{ filter_library[key].css }}"></div>
+                              <span style="position:relative; z-index:1; font-size:1.5rem;">🔥</span>
+                            </div>
+                            <span style="font-size:0.75rem; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block;">{{ filter_library[key].label }}</span>
+                        </div>
+                        {% endif %}
+                      {% endfor %}
+                   </div>
+                </div>
+
+                <!-- All Presets Grid -->
+                <div style="margin-bottom:1rem;">
+                   <h4 style="margin:0 0 1rem 0; color:var(--text-primary); font-size:0.9rem; text-transform:uppercase; letter-spacing:1px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:0.5rem;">📚 All Presets</h4>
+                   <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap:0.75rem; max-height: 350px; overflow-y: auto; padding-right: 0.5rem; scrollbar-width: thin;">
+                      <div onclick="applyPreset('none')" style="cursor:pointer; text-align:center;">
+                          <div style="width:100%; aspect-ratio:1; background:#222; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:0.5rem; border:2px solid transparent; transition:all 0.2s;" class="preset-card">
+                            🚫
+                          </div>
+                          <span style="font-size:0.75rem; color:var(--text-secondary);">Original</span>
+                      </div>
+
+                      {% for key, val in filter_library.items() %}
+                      <div onclick="applyPreset('{{ key }}')" style="cursor:pointer; text-align:center;">
+                          <div style="width:100%; aspect-ratio:1; background:linear-gradient(135deg, #333, #111); border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:0.5rem; border:2px solid transparent; transition:all 0.2s; position:relative; overflow:hidden;" class="preset-card">
+                            <!-- Simulate filter on thumbnail -->
+                            <div class="preset-preview" style="position:absolute; inset:0; background:linear-gradient(45deg, var(--accent-primary), transparent); opacity:0.3;" data-filter-css="{{ val.css }}"></div>
+                            <span style="position:relative; z-index:1; font-size:1.5rem;">🎨</span>
+                          </div>
+                          <span style="font-size:0.75rem; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block;">{{ val.label }}</span>
+                      </div>
+                      {% endfor %}
+                   </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: ADJUST -->
+            <div id="tab-adjust" class="tab-content">
+                <button type="button" onclick="autoEnhance()" style="width:100%; margin-bottom:1.5rem; background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); color:#000; border:none; padding:0.75rem; border-radius:8px; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.5rem; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3); transition: transform 0.2s;">
+                  ✨ Auto Enhance
+                </button>
+
+                <!-- Sliders Group 1: Light -->
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="margin:0 0 1rem 0; color:var(--text-primary); font-size:0.9rem; text-transform:uppercase; letter-spacing:1px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:0.5rem;">Light</h4>
+                    
+                    <div class="slider-grid">
+                        <div class="form-group">
+                           <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem;">
+                               <label style="font-size:0.85rem; display:flex; align-items:center; gap:0.5rem;">🔅 Brightness</label>
+                               <span id="val_brightness" style="font-size:0.85rem; color:var(--accent-primary);">0</span>
+                           </div>
+                           <input type="range" id="rng_brightness" min="-0.5" max="0.5" step="0.05" value="0" style="width:100%; accent-color: var(--accent-primary);">
+                        </div>
+
+                        <div class="form-group">
+                           <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem;">
+                               <label style="font-size:0.85rem; display:flex; align-items:center; gap:0.5rem;">🌤️ Exposure</label>
+                               <span id="val_exposure" style="font-size:0.85rem; color:var(--accent-primary);">0</span>
+                           </div>
+                           <input type="range" id="rng_exposure" min="-1.0" max="1.0" step="0.1" value="0" style="width:100%; accent-color: var(--accent-primary);">
+                        </div>
+
+                        <div class="form-group">
+                           <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem;">
+                               <label style="font-size:0.85rem; display:flex; align-items:center; gap:0.5rem;">🌗 Contrast</label>
+                               <span id="val_contrast" style="font-size:0.85rem; color:var(--accent-primary);">0</span>
+                           </div>
+                           <input type="range" id="rng_contrast" min="0.5" max="2.0" step="0.1" value="1" style="width:100%; accent-color: var(--accent-primary);">
+                        </div>
+
+                        <div class="form-group">
+                           <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem;">
+                               <label style="font-size:0.85rem; display:flex; align-items:center; gap:0.5rem;">✨ Highlights</label>
+                               <span id="val_highlights" style="font-size:0.85rem; color:var(--accent-primary);">0</span>
+                           </div>
+                           <input type="range" id="rng_highlights" min="-1.0" max="1.0" step="0.1" value="0" style="width:100%; accent-color: var(--accent-primary);">
+                        </div>
+
+                        <div class="form-group">
+                           <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem;">
+                               <label style="font-size:0.85rem; display:flex; align-items:center; gap:0.5rem;">🌑 Shadows</label>
+                               <span id="val_shadows" style="font-size:0.85rem; color:var(--accent-primary);">0</span>
+                           </div>
+                           <input type="range" id="rng_shadows" min="-1.0" max="1.0" step="0.1" value="0" style="width:100%; accent-color: var(--accent-primary);">
+                        </div>
+
+                        <div class="form-group">
+                           <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem;">
+                               <label style="font-size:0.85rem; display:flex; align-items:center; gap:0.5rem;">🔘 Vignette</label>
+                               <span id="val_vignette" style="font-size:0.85rem; color:var(--accent-primary);">0</span>
+                           </div>
+                           <input type="range" id="rng_vignette" min="0" max="1.0" step="0.1" value="0" style="width:100%; accent-color: var(--accent-primary);">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sliders Group 2: Colour -->
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="margin:0 0 1rem 0; color:var(--text-primary); font-size:0.9rem; text-transform:uppercase; letter-spacing:1px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:0.5rem;">Colour</h4>
+                    
+                    <div class="slider-grid">
+                        <div class="form-group">
+                           <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem;">
+                               <label style="font-size:0.85rem; display:flex; align-items:center; gap:0.5rem;">💧 Saturation</label>
+                               <span id="val_saturation" style="font-size:0.85rem; color:var(--accent-primary);">0</span>
+                           </div>
+                           <input type="range" id="rng_saturation" min="0" max="3.0" step="0.1" value="1" style="width:100%; accent-color: var(--accent-primary);">
+                        </div>
+
+                        <div class="form-group">
+                           <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem;">
+                               <label style="font-size:0.85rem; display:flex; align-items:center; gap:0.5rem;">🌡️ Warmth</label>
+                               <span id="val_warmth" style="font-size:0.85rem; color:var(--accent-primary);">0</span>
+                           </div>
+                           <input type="range" id="rng_warmth" min="-1.0" max="1.0" step="0.1" value="0" style="width:100%; accent-color: var(--accent-primary);">
+                        </div>
+
+                        <div class="form-group">
+                           <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem;">
+                               <label style="font-size:0.85rem; display:flex; align-items:center; gap:0.5rem;">🩸 Tint</label>
+                               <span id="val_tint" style="font-size:0.85rem; color:var(--accent-primary);">0</span>
+                           </div>
+                           <input type="range" id="rng_tint" min="-1.0" max="1.0" step="0.1" value="0" style="width:100%; accent-color: var(--accent-primary);">
+                        </div>
+                        
+                        <div class="form-group">
+                           <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem;">
+                               <label style="font-size:0.85rem; display:flex; align-items:center; gap:0.5rem;">⚫ B&W</label>
+                               <span style="font-size:0.85rem; color:var(--text-secondary);">Toggle</span>
+                           </div>
+                           <div class="toggle-wrapper" style="padding: 0.5rem; background: transparent; border: 1px solid var(--border-color); border-radius: 8px;">
+                             <input type="checkbox" id="chk_grayscale">
+                             <label for="chk_grayscale" style="font-size:0.8rem;">Grayscale</label>
+                           </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sliders Group 3: Details -->
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="margin:0 0 1rem 0; color:var(--text-primary); font-size:0.9rem; text-transform:uppercase; letter-spacing:1px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:0.5rem;">Details</h4>
+                    
+                    <div class="slider-grid">
+                        <div class="form-group">
+                           <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem;">
+                               <label style="font-size:0.85rem; display:flex; align-items:center; gap:0.5rem;">💎 Sharpness</label>
+                               <span id="val_sharpness" style="font-size:0.85rem; color:var(--accent-primary);">0</span>
+                           </div>
+                           <input type="range" id="rng_sharpness" min="0" max="1.0" step="0.1" value="0" style="width:100%; accent-color: var(--accent-primary);">
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="resetFilters()" class="btn-sm" style="width:100%; justify-content: center; margin-top: 1rem;">🔄 Reset Filters</button>
+            </div>
+
+            <!-- TAB 3: EFFECTS -->
+            <div id="tab-effects" class="tab-content">
+                <h4 style="margin:0 0 1rem 0; color:var(--text-primary); font-size:0.9rem; text-transform:uppercase; letter-spacing:1px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:0.5rem;">Special Effects</h4>
+                
+                <div class="row" style="gap: 1rem;">
+                    <div class="col">
+                        <div onclick="applyEffect('glitch')" class="effect-card" style="cursor:pointer; background: var(--bg-tertiary); padding: 1rem; border-radius: 12px; text-align: center; border: 1px solid var(--border-color); transition: all 0.2s;">
+                            <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">👾</span>
+                            <span style="font-weight: 600;">Glitch</span>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div onclick="applyEffect('noise')" class="effect-card" style="cursor:pointer; background: var(--bg-tertiary); padding: 1rem; border-radius: 12px; text-align: center; border: 1px solid var(--border-color); transition: all 0.2s;">
+                            <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">📺</span>
+                            <span style="font-weight: 600;">Noise</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="gap: 1rem; margin-top: 1rem;">
+                    <div class="col">
+                        <div onclick="applyEffect('pixelate')" class="effect-card" style="cursor:pointer; background: var(--bg-tertiary); padding: 1rem; border-radius: 12px; text-align: center; border: 1px solid var(--border-color); transition: all 0.2s;">
+                            <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">🧱</span>
+                            <span style="font-weight: 600;">Pixelate</span>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div onclick="applyEffect('blur')" class="effect-card" style="cursor:pointer; background: var(--bg-tertiary); padding: 1rem; border-radius: 12px; text-align: center; border: 1px solid var(--border-color); transition: all 0.2s;">
+                            <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">🌫️</span>
+                            <span style="font-weight: 600;">Blur</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="gap: 1rem; margin-top: 1rem;">
+                    <div class="col">
+                        <div onclick="applyEffect('negate')" class="effect-card" style="cursor:pointer; background: var(--bg-tertiary); padding: 1rem; border-radius: 12px; text-align: center; border: 1px solid var(--border-color); transition: all 0.2s;">
+                            <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">🌗</span>
+                            <span style="font-weight: 600;">Invert</span>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div onclick="applyEffect('edge')" class="effect-card" style="cursor:pointer; background: var(--bg-tertiary); padding: 1rem; border-radius: 12px; text-align: center; border: 1px solid var(--border-color); transition: all 0.2s;">
+                            <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">✏️</span>
+                            <span style="font-weight: 600;">Edge</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="gap: 1rem; margin-top: 1rem;">
+                     <div class="col">
+                        <div onclick="applyEffect('mirror')" class="effect-card" style="cursor:pointer; background: var(--bg-tertiary); padding: 1rem; border-radius: 12px; text-align: center; border: 1px solid var(--border-color); transition: all 0.2s;">
+                            <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">🪞</span>
+                            <span style="font-weight: 600;">Mirror</span>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div onclick="applyEffect('none')" class="effect-card" style="cursor:pointer; background: var(--bg-tertiary); padding: 1rem; border-radius: 12px; text-align: center; border: 1px solid var(--border-color); transition: all 0.2s;">
+                            <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">🚫</span>
+                            <span style="font-weight: 600;">None</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: TOOLS -->
+            <div id="tab-tools" class="tab-content">
+                <h4 style="margin:0 0 1rem 0; color:var(--text-primary); font-size:0.9rem; text-transform:uppercase; letter-spacing:1px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:0.5rem;">Video & Audio Tools</h4>
+                
+                <div class="form-group">
+                   <label>Transition Effect</label>
+                   <select id="ui_edit_transition" onchange="getEl('transition_type').value=this.value" style="width:100%; padding:0.5rem; background:var(--bg-secondary); border:1px solid var(--border-color); color:var(--text-primary); border-radius:8px;">
+                       <option value="none">None</option>
+                       <option value="fade">Fade In/Out</option>
+                   </select>
+               </div>
+               
+               <div class="form-group">
+                   <label>Trim Video (Seconds)</label>
+                   <div style="display: flex; gap: 0.5rem;">
+                       <input type="number" id="ui_edit_trim_start" placeholder="Start" min="0" style="width: 50%; padding:0.5rem; background:var(--bg-secondary); border:1px solid var(--border-color); color:var(--text-primary); border-radius:8px;" onchange="getEl('trim_start').value=this.value">
+                       <input type="number" id="ui_edit_trim_end" placeholder="End" min="0" style="width: 50%; padding:0.5rem; background:var(--bg-secondary); border:1px solid var(--border-color); color:var(--text-primary); border-radius:8px;" onchange="getEl('trim_end').value=this.value">
+                   </div>
+               </div>
+
+
+            </div>
+
+            <!-- Global Actions -->
+            <div style="margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem; display: flex; gap: 1rem;">
+                <button type="button" onclick="updateFilters()" class="btn-sm" style="flex: 1; justify-content: center; background: var(--bg-tertiary); border: 1px solid var(--border-color); padding: 1rem;">
+                  👁️ Update Preview
+                </button>
+                <button type="button" onclick="applyFiltersAndProcess()" style="flex: 2; background: linear-gradient(135deg, #0ea5e9 0%, #8b5cf6 100%); color:#fff; border:none; padding:1rem; border-radius:12px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.5rem; box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3); transition: transform 0.2s; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px;">
+                  🚀 Process & Download
+                </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    <!-- Progress Card -->
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+         <label style="margin:0;">Status</label>
+         <span id="progressText" style="color: var(--accent-primary); font-weight: bold;">Idle</span>
+      </div>
+      <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="results-grid" id="result"></div>
+  </div>
+
+  <script type="application/json" id="filter-library-data">
+    {{ filter_library | tojson }}
+  </script>
+
+  <script>
+    // --- 1. Global & Initialization ---
+    
+    // Theme Switcher Logic
+    function toggleTheme() {
+        const root = document.documentElement;
+        const isLight = root.getAttribute('data-theme') === 'light';
+        const next = isLight ? 'dark' : 'light';
+        
+        root.setAttribute('data-theme', next);
+        if (next === 'light') {
+            document.body.setAttribute('data-theme', 'light');
+        } else {
+            document.body.removeAttribute('data-theme');
+        }
+        
+        localStorage.setItem('theme', next);
+        
+        const btn = document.getElementById('theme-toggle');
+        if (btn) btn.textContent = next === 'light' ? '☀️' : '🌙';
+    }
+
+    // Initialize Theme immediately
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+        document.body.setAttribute('data-theme', 'light');
+        const btn = document.getElementById('theme-toggle');
+        if (btn) btn.textContent = '☀️';
+    }
+
+    let FILTER_LIBRARY = {};
+    try {
+      const el = document.getElementById('filter-library-data');
+      if (el) {
+          FILTER_LIBRARY = JSON.parse(el.textContent);
+      }
+    } catch (e) {
+      console.error("Failed to load filter library:", e);
+    }
+
+    // Helper to safely get elements
+    const getEl = (id) => {
+        const el = document.getElementById(id);
+        if (!el) console.warn(`Element with ID '${id}' not found.`);
+        return el;
+    };
+
+    // DOM Elements
+    const form = getEl('clipForm');
+    const progressText = getEl('progressText');
+    const progressBar = getEl('progressBar');
+    const result = getEl('result');
+    const urlInput = getEl('youtube_url');
+    const qualitySelect = getEl('quality');
+    const videoFile = getEl('video_file');
+    const previewPlayer = getEl('previewPlayer');
+    const previewPlaceholder = getEl('previewPlaceholder');
+    const chkGrayscale = getEl('chk_grayscale');
+
+    // Toggle Sections
+    function toggleDubbing() {
+       const el = getEl('dubbing_enabled');
+       const settings = getEl('dub_settings');
+       if (el && settings) settings.style.display = el.checked ? 'block' : 'none';
+    }
+
+    function toggleSubtitles() {
+       const el = getEl('subtitles');
+       const settings = getEl('subtitle-settings');
+       if (el && settings) settings.style.display = el.checked ? 'block' : 'none';
+    }
+
+    // Initialize Toggles
+    if (getEl('subtitles')) toggleSubtitles();
+    if (getEl('dubbing_enabled')) toggleDubbing();
+
+    // --- 2. Format Fetching (YouTube) ---
+    async function fetchFormats(url) {
+      try {
+        const res = await fetch('/formats', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({url})
+        });
+        const data = await res.json();
+        if (data.formats && qualitySelect) {
+          const available = new Set(data.formats.map(f => f.label));
+          [...qualitySelect.options].forEach(opt => {
+            opt.disabled = !available.has(opt.text);
+          });
+        }
+      } catch (e) { console.error("Format fetch error:", e); }
+    }
+
+    if (urlInput) {
+        urlInput.addEventListener('blur', () => {
+          const url = urlInput.value.trim();
+          if (url) fetchFormats(url);
+        });
+    }
+
+    // --- 3. Form Submission ---
+    if (form) {
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          if (progressText) progressText.textContent = 'Starting...';
+          if (progressBar) progressBar.style.width = '10%';
+          const btn = getEl('generateBtn');
+          if (btn) {
+              btn.disabled = true;
+              btn.textContent = 'Processing...';
+          }
+
+          const fd = new FormData(form);
+          // Checkboxes might not be included if unchecked, or handled manually
+          // The backend expects 'on' or 'off' strings for some fields?
+          // Let's rely on what the form sends naturally, but ensure we appended our custom logic if needed.
+          // Actually, our previous code manually appended everything. Let's do that for safety.
+          
+          // Re-construct specific fields to match backend expectations exactly
+          fd.set('auto_edit', getEl('auto_edit')?.checked ? 'on' : 'off');
+          fd.set('subtitles', getEl('subtitles')?.checked ? 'on' : 'off');
+          fd.set('dubbing_enabled', getEl('dubbing_enabled')?.checked ? 'on' : 'off');
+          
+          // Filters are hidden inputs, so they are already in fd if they have name attributes.
+          // Let's verify hidden inputs have values (updateFilters calls sync).
+          updateFilters(); // Force sync
+          
+          // Manually append/overwrite filter values to ensure they are sent correctly
+          sliderKeys.forEach(k => {
+              const val = sliders[k] ? sliders[k].value : (hidden[k] ? hidden[k].value : 0);
+              fd.set('filter_' + k, val);
+          });
+          if (hidden.grayscale) fd.set('filter_grayscale', hidden.grayscale.value);
+          if (hidden.preset) fd.set('filter_preset', hidden.preset.value);
+
+          // Background Music
+          const bgFile = getEl('bg_music_file');
+          if (bgFile && bgFile.files[0]) {
+              fd.append('bg_music', bgFile.files[0]);
+          }
+          const bgVol = getEl('bg_volume');
+          if (bgVol) {
+              fd.append('bg_volume', bgVol.value);
+          }
+
+           try {
+            const res = await fetch('/process', { method: 'POST', body: fd });
+            const data = await res.json();
+            
+            if (!data.job_id) {
+              if (progressText) progressText.textContent = 'Error: ' + (data.error || 'Unknown');
+              if (btn) {
+                  btn.disabled = false;
+                  btn.textContent = '🚀 Generate Viral Clips';
+              }
+              return;
+            }
+
+            const jobId = data.job_id;
+            const timer = setInterval(async () => {
+              try {
+                const pr = await fetch(`/progress/${jobId}`);
+                const info = await pr.json();
+                const st = info.status || 'pending';
+                if (progressText) progressText.textContent = st.charAt(0).toUpperCase() + st.slice(1);
+                
+                const map = { initializing: 10, downloading: 20, analyzing: 35, transcribing: 55, selecting: 65, editing: 85, completed: 100, error: 100 };
+                if (progressBar) progressBar.style.width = (map[st] || 5) + '%';
+                
+                if (st === 'completed' || st === 'error') {
+                  clearInterval(timer);
+                  if (btn) {
+                      btn.disabled = false;
+                      btn.textContent = '🚀 Generate Viral Clips';
+                  }
+                  
+                  if (st === 'completed') {
+                    renderResults(jobId, info.results || []);
+                  } else {
+                    if (result) result.innerHTML = '<div class="card" style="color:var(--danger)">Error: ' + (info.error || 'Unknown') + '</div>';
+                  }
+                }
+              } catch(e) {
+                console.error(e);
+              }
+            }, 1000);
+          } catch (e) {
+             if (progressText) progressText.textContent = 'Error: ' + e.message;
+             if (btn) btn.disabled = false;
+          }
+        });
+    }
+
+    function renderResults(jobId, items) {
+      if (!result) return;
+      result.innerHTML = '';
+      if (!items || items.length === 0) {
+        result.innerHTML = '<div class="card">No clips were generated. Check console for details.</div>';
+        return;
+      }
+      items.forEach((it, i) => {
+        const div = document.createElement('div');
+        div.className = 'clip-card';
+        const videoUrl = `/download/${jobId}/video?i=${i}`;
+        const srtUrl = it.srt_path ? `/download/${jobId}/srt?i=${i}` : null;
+        const assUrl = it.ass_path ? `/download/${jobId}/ass?i=${i}` : null;
+        
+        div.innerHTML = `
+          <video controls src="${videoUrl}"></video>
+          <div class="clip-info">
+            <span class="clip-badge">Score: ${it.score}</span>
+            <div style="margin-bottom:1rem;">
+                <h4 style="margin:0 0 0.5rem 0;">${it.title || 'Clip ' + (i+1)}</h4>
+                <p class="clip-meta">${it.hashtags || ''}</p>
+            </div>
+            <div class="clip-actions" style="flex-direction:column;">
+              <a href="${videoUrl}" download class="btn-primary" style="text-align:center; text-decoration:none; display:block; padding:0.75rem;">
+                 ⬇️ Download Filtered Video
+              </a>
+              <div style="display:flex; gap:0.5rem; margin-top:0.5rem;">
+                  ${srtUrl ? '<a href="'+srtUrl+'" download class="btn-sm" style="flex:1; justify-content:center;">📄 SRT</a>' : ''}
+                  ${assUrl ? '<a href="'+assUrl+'" download class="btn-sm" style="flex:1; justify-content:center;">🎨 ASS</a>' : ''}
+              </div>
+            </div>
+          </div>
+        `;
+        result.appendChild(div);
+      });
+    }
+
+    // --- 4. Live Filter Logic ---
+    
+    // Main Tab Switching
+    window.switchMainTab = function(tab) {
+        const clipSec = getEl('section-clip');
+        const editSec = getEl('section-edit');
+        const vocalSec = getEl('section-vocal');
+        
+        const clipBtn = getEl('nav-clip');
+        const editBtn = getEl('nav-edit');
+        const vocalBtn = getEl('nav-vocal');
+        
+        const modeInput = getEl('mode');
+        
+        if (modeInput) modeInput.value = tab;
+
+        // Reset all
+        clipSec.style.display = 'none';
+        editSec.style.display = 'none';
+        vocalSec.style.display = 'none';
+        
+        [clipBtn, editBtn, vocalBtn].forEach(b => {
+            if(b) {
+                b.style.background = 'var(--bg-tertiary)';
+                b.style.color = '#fff';
+            }
+        });
+
+        if (tab === 'clip') {
+            clipSec.style.display = 'block';
+            if(clipBtn) clipBtn.style.background = 'var(--accent-gradient)';
+        } else if (tab === 'edit') {
+            editSec.style.display = 'block';
+            if(editBtn) editBtn.style.background = 'var(--accent-gradient)';
+        } else if (tab === 'vocal') {
+            vocalSec.style.display = 'block';
+            if(vocalBtn) vocalBtn.style.background = 'var(--accent-gradient)';
+        }
+    };
+    
+    // Vocal Remover Process
+    window.processVocal = async function() {
+        const fileInput = getEl('vocal_file');
+        const btn = getEl('btn-vocal');
+        const results = getEl('vocal-results');
+        
+        if (!fileInput.files[0]) {
+            alert("Please select a file first.");
+            return;
+        }
+        
+        const fd = new FormData();
+        fd.append('video_file', fileInput.files[0]);
+        
+        btn.disabled = true;
+        btn.innerText = "⏳ Processing (This may take a while)...";
+        results.style.display = 'none';
+        
+        try {
+            const res = await fetch('/vocal_remove', {
+                method: 'POST',
+                body: fd
+            });
+            
+            const data = await res.json();
+            
+            if (res.ok) {
+                getEl('link-vocals').href = data.vocals_url;
+                getEl('link-background').href = data.background_url;
+                results.style.display = 'block';
+            } else {
+                alert("Error: " + (data.error || "Unknown error"));
+            }
+        } catch (e) {
+            console.error(e);
+            alert("Failed to process video.");
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "✂️ Separate Vocals";
+        }
+    };
+
+    // Audio Mixer Process
+    window.processAudioMix = async function() {
+        const videoInput = getEl('mix_video_file');
+        const bgInput = getEl('mix_bg_file');
+        const volInput = getEl('mix_bg_volume');
+        const btn = getEl('btn-mix');
+        
+        if (!videoInput.files[0] || !bgInput.files[0]) {
+            alert("Please select both a video file and a background music file.");
+            return;
+        }
+        
+        const fd = new FormData();
+        fd.append('video_file', videoInput.files[0]);
+        fd.append('bg_music', bgInput.files[0]);
+        fd.append('bg_volume', volInput.value);
+        
+        btn.disabled = true;
+        btn.innerText = "⏳ Mixing Audio...";
+        
+        try {
+            const res = await fetch('/mix_audio', {
+                method: 'POST',
+                body: fd
+            });
+            
+            const data = await res.json();
+            
+            if (res.ok) {
+                // Auto download
+                const a = document.createElement('a');
+                a.href = data.download_url;
+                a.download = data.filename || 'mixed_video.mp4';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
+                alert("Audio mixing complete! Download starting.");
+            } else {
+                alert("Error: " + (data.error || "Unknown error"));
+            }
+        } catch (e) {
+            console.error(e);
+            alert("Failed to mix audio.");
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "🎵 Mix & Download";
+        }
+    };
+    
+    // Initialize Main Tabs
+    switchMainTab('clip');
+
+    // Tab Switching (Sub-tabs)
+    window.switchTab = function(tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        
+        const content = getEl('tab-' + tabId);
+        if (content) content.classList.add('active');
+        
+        // Activate button
+        const btn = document.querySelector(`button[onclick="switchTab('${tabId}')"]`);
+        if(btn) btn.classList.add('active');
+    };
+
+    // Sliders & Values
+    const sliderKeys = ['brightness', 'contrast', 'saturation', 'exposure', 'highlights', 'shadows', 'vignette', 'warmth', 'tint', 'sharpness'];
+    const sliders = {};
+    const values = {};
+    const hidden = {};
+
+    sliderKeys.forEach(k => {
+        sliders[k] = getEl('rng_' + k);
+        values[k] = getEl('val_' + k);
+        hidden[k] = getEl('filter_' + k);
+    });
+    
+    // Extras
+    hidden.grayscale = getEl('filter_grayscale');
+    hidden.preset = getEl('filter_preset');
+    hidden.effect = getEl('filter_effect');
+
+    let currentPresetCss = '';
+
+    // Video File Preview
+    if (videoFile) {
+        videoFile.addEventListener('change', function(e) {
+          const file = e.target.files[0];
+          if (file) {
+            const url = URL.createObjectURL(file);
+            if (previewPlayer) {
+                previewPlayer.src = url;
+                previewPlayer.play().catch(e => console.log("Autoplay blocked:", e));
+            }
+            if (previewPlaceholder) previewPlaceholder.style.display = 'none';
+          }
+        });
+    }
+    
+    // Apply Effect
+    window.applyEffect = function(name) {
+        if (hidden.effect) hidden.effect.value = name;
+        
+        // Visual feedback
+        document.querySelectorAll('.effect-card').forEach(el => {
+            if (el.getAttribute('onclick').includes(`'${name}'`)) {
+                el.style.borderColor = 'var(--accent-primary)';
+                el.style.background = 'rgba(124, 58, 237, 0.1)';
+            } else {
+                el.style.borderColor = 'var(--border-color)';
+                el.style.background = 'var(--bg-tertiary)';
+            }
+        });
+        
+        updateFilters();
+    };
+
+    window.updateFilters = function() {
+      try {
+          // 1. Read values
+          const vals = {};
+          
+          sliderKeys.forEach(k => {
+              if (sliders[k]) {
+                  vals[k] = parseFloat(sliders[k].value) || 0;
+                  if (values[k]) values[k].textContent = vals[k];
+                  if (hidden[k]) hidden[k].value = vals[k];
+              } else {
+                  vals[k] = (k === 'contrast' || k === 'saturation') ? 1 : 0;
+              }
+          });
+          
+          const g = chkGrayscale ? chkGrayscale.checked : false;
+          if (hidden.grayscale) hidden.grayscale.value = g ? 1 : 0;
+
+          // 2. Construct CSS for Preview
+          let cssB = 1 + vals.brightness + (vals.exposure * 0.5); 
+          let cssC = vals.contrast;
+          let cssS = vals.saturation;
+          
+          let cssSepia = 0;
+          let cssHue = 0;
+          
+          if (vals.warmth !== 0) {
+              cssSepia += Math.abs(vals.warmth) * 0.5;
+              if (vals.warmth > 0) cssHue -= 10 * vals.warmth; 
+              else cssHue += 10 * Math.abs(vals.warmth); 
+          }
+          
+          if (vals.tint !== 0) {
+              cssHue += vals.tint * 20;
+          }
+
+          const filterParts = [];
+          if (currentPresetCss) filterParts.push(currentPresetCss);
+          
+          if (cssB !== 1) filterParts.push(`brightness(${cssB})`);
+          if (cssC !== 1) filterParts.push(`contrast(${cssC})`);
+          if (cssS !== 1) filterParts.push(`saturate(${cssS})`);
+          if (g) filterParts.push(`grayscale(1)`);
+          if (cssSepia > 0) filterParts.push(`sepia(${cssSepia})`);
+          if (cssHue !== 0) filterParts.push(`hue-rotate(${cssHue}deg)`);
+          
+          // Effect Preview (Limited)
+          const currentEffect = hidden.effect ? hidden.effect.value : 'none';
+          if (currentEffect === 'blur') {
+              filterParts.push('blur(3px)');
+          } else if (currentEffect === 'pixelate') {
+              // Not easily simulatable with filter, maybe basic
+          }
+
+          if (previewPlayer) {
+              previewPlayer.style.filter = filterParts.join(' ');
+          }
+          
+          // 3. Vignette Overlay
+          const vigOverlay = getEl('vignette_overlay');
+          if (vigOverlay) {
+              vigOverlay.style.opacity = vals.vignette || 0;
+          }
+          
+      } catch (e) {
+          console.error("updateFilters error:", e);
+      }
+    };
+
+    // Attach Listeners
+    sliderKeys.forEach(k => {
+        if (sliders[k]) sliders[k].addEventListener('input', updateFilters);
+    });
+    if (chkGrayscale) chkGrayscale.addEventListener('change', updateFilters);
+
+    window.applyPreset = function(name) {
+       if (hidden.preset) hidden.preset.value = name;
+       
+       if (name === 'none') {
+           currentPresetCss = '';
+           // Don't reset everything, just preset
+       } else if (FILTER_LIBRARY[name]) {
+           currentPresetCss = FILTER_LIBRARY[name].css;
+       }
+       
+       // Update UI
+       document.querySelectorAll('.preset-card').forEach(el => {
+           // ... (existing preset UI logic if any, or add it)
+       });
+       
+       updateFilters();
+    };
+
+    window.resetFilters = function() {
+      // Set values back to defaults
+      if (sliders.brightness) sliders.brightness.value = 0;
+      if (sliders.contrast) sliders.contrast.value = 1;
+      if (sliders.saturation) sliders.saturation.value = 1;
+      if (sliders.exposure) sliders.exposure.value = 0;
+      if (sliders.highlights) sliders.highlights.value = 0;
+      if (sliders.shadows) sliders.shadows.value = 0;
+      if (sliders.vignette) sliders.vignette.value = 0;
+      if (sliders.warmth) sliders.warmth.value = 0;
+      if (sliders.tint) sliders.tint.value = 0;
+      if (sliders.sharpness) sliders.sharpness.value = 0;
+      
+      if (chkGrayscale) chkGrayscale.checked = false;
+      if (hidden.preset) hidden.preset.value = 'none';
+      if (hidden.effect) hidden.effect.value = 'none';
+      currentPresetCss = '';
+      
+      applyEffect('none'); // Reset effect UI
+      updateFilters();
+    };
+    
+    window.autoEnhance = function() {
+        // ... (keep existing)
+        if (sliders.contrast) sliders.contrast.value = 1.1;
+        if (sliders.saturation) sliders.saturation.value = 1.2;
+        if (sliders.sharpness) sliders.sharpness.value = 0.3;
+        if (sliders.exposure) sliders.exposure.value = 0.05;
+        updateFilters();
+    };
+
+    window.applyFiltersAndProcess = function() {
+        updateFilters();
+        
+        // Sync Extra Inputs
+        const trimStart = getEl('ui_trim_start');
+        const trimEnd = getEl('ui_trim_end');
+        const hTrimStart = getEl('trim_start');
+        const hTrimEnd = getEl('trim_end');
+        
+        if (trimStart && hTrimStart) hTrimStart.value = trimStart.value || 0;
+        if (trimEnd && hTrimEnd) hTrimEnd.value = trimEnd.value || 0;
+        
+        // Submit
+        const btn = getEl('generateBtn');
+        if (btn) {
+            btn.click();
+            // Scroll
+            const pb = getEl('progressBar');
+            if (pb) pb.closest('.card').scrollIntoView({behavior: 'smooth'});
+        }
+    };
+
+    // --- Play/Pause & Server Preview ---
+    window.togglePlay = function() {
+        if (!previewPlayer) return;
+        if (previewPlayer.paused) {
+            previewPlayer.play();
+            // Hide static preview image if playing
+            const img = getEl('previewImage');
+            if (img) img.style.display = 'none';
+        } else {
+            previewPlayer.pause();
+        }
+    };
+
+    window.clearServerPreview = function() {
+        const img = getEl('previewImage');
+        if (img) {
+            img.style.display = 'none';
+            img.src = '';
+        }
+        // Also clear CSS filters from video if desired? No, keep CSS for live adjust.
+    };
+
+    window.serverPreview = async function() {
+        if (!previewPlayer || !previewPlayer.src) {
+            alert("Please upload a video first.");
+            return;
+        }
+        
+        // Pause to capture frame
+        previewPlayer.pause();
+        
+        // Capture frame
+        const canvas = document.createElement('canvas');
+        canvas.width = previewPlayer.videoWidth;
+        canvas.height = previewPlayer.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(previewPlayer, 0, 0, canvas.width, canvas.height);
+        
+        canvas.toBlob(async (blob) => {
+            if (!blob) return;
+            
+            // Prepare FormData
+            const fd = new FormData();
+            fd.append('image', blob, 'preview.jpg');
+            
+            // Gather filters
+            const filters = {};
+            sliderKeys.forEach(k => {
+                if (hidden[k]) filters[k] = parseFloat(hidden[k].value) || 0;
+            });
+            if (hidden.grayscale) filters.grayscale = parseInt(hidden.grayscale.value);
+            if (hidden.preset) filters.preset = hidden.preset.value;
+            if (hidden.effect) filters.effect = hidden.effect.value;
+            
+            fd.append('filters', JSON.stringify(filters));
+            
+            // Show loading state on button?
+            const btn = document.querySelector('button[onclick="serverPreview()"]');
+            const originalText = btn ? btn.innerText : 'Update Preview';
+            if (btn) btn.innerText = '⏳ Processing...';
+            
+            try {
+                const res = await fetch('/preview_frame', {
+                    method: 'POST',
+                    body: fd
+                });
+                
+                if (res.ok) {
+                    const blob = await res.blob();
+                    const url = URL.createObjectURL(blob);
+                    const img = getEl('previewImage');
+                    if (img) {
+                        img.src = url;
+                        img.style.display = 'block';
+                    }
+                } else {
+                    const err = await res.json();
+                    alert("Preview Error: " + (err.error || "Unknown"));
+                }
+            } catch (e) {
+                console.error(e);
+                alert("Preview Failed");
+            } finally {
+                if (btn) btn.innerText = originalText;
+            }
+        }, 'image/jpeg');
+    };
+    
+    // Initial update
+    updateFilters();
+
+    // Apply styles to preset previews
+    document.querySelectorAll('.preset-preview').forEach(el => {
+        const css = el.getAttribute('data-filter-css');
+        if (css) {
+            el.style.filter = css;
+        }
+    });
+
+  </script>
+</body>
+</html>
