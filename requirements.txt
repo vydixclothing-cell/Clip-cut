@@ -1,4 +1,5 @@
 Flask>=2.3.0,<3.0.0
+gunicorn
 yt-dlp[default]>=2024.12.23
 opencv-python>=4.9.0
 numpy<2.0.0
