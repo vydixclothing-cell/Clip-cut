@@ -4,3 +4,4 @@ yt-dlp[default]>=2024.12.23
 opencv-python>=4.9.0
 numpy<2.0.0
 faster-whisper>=1.0.0
+deep-translator
